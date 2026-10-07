@@ -1,0 +1,542 @@
+/* =====================================================================
+   BANCADA PANTOGRÁFICA - estilo da interface (display de 7 polegadas)
+
+   Ideia visual: uma "moldura" de aço escuro (topo + coluna da régua) em
+   volta de uma área de trabalho clara. A régua com ponteiro amarelo é o
+   destaque da tela. Os botões parecem teclas físicas (sombra embaixo que
+   afunda ao tocar), para dar resposta clara ao toque.
+
+   Tudo usa "rem", e o rem acompanha o tamanho da tela (veja o html abaixo),
+   então a interface cresce ou encolhe junto com o display.
+   ===================================================================== */
+
+/* ---------- Cores e fontes (mude aqui para trocar o visual) ---------- */
+:root {
+  --concreto: #E3E6E8;      /* fundo da área de trabalho */
+  --chapa: #F7F8F9;         /* cartões e campos */
+  --aco: #14222B;           /* moldura e textos */
+  --aco-medio: #22343F;
+  --tinta-suave: #52646F;
+  --linha: #B7BFC4;
+  --azul: #0D5C7D;          /* ação principal */
+  --azul-escuro: #08425A;
+  --amarelo: #F5B700;       /* ponteiro, altura, destaque */
+  --amarelo-escuro: #B98A00;
+  --vermelho: #C62E1C;      /* parar, emergência, excluir */
+  --vermelho-escuro: #8F2013;
+  --verde: #2B7A4B;
+
+  --fonte-titulo: "Bahnschrift", "DIN Alternate", "Roboto Condensed", "Arial Narrow",
+                  "Liberation Sans Narrow", "DejaVu Sans Condensed", system-ui, sans-serif;
+  --fonte-texto: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans",
+                 "Liberation Sans", sans-serif;
+
+  --altura-teclado: 0px;    /* o teclado virtual atualiza este valor */
+}
+
+/* ---------- Base ---------- */
+html {
+  /* 16px em 800x480, 20px em 1024x600 */
+  font-size: clamp(14px, min(3.33vh, 2.2vw), 22px);
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--concreto);
+  color: var(--aco);
+  font-family: var(--fonte-texto);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+[hidden] { display: none !important; }
+
+h1, h2 { font-family: var(--fonte-titulo); margin: 0; line-height: 1.1; }
+p { margin: 0; }
+input, button { font-family: inherit; }
+svg { display: block; }
+
+:focus-visible { outline: 3px solid var(--amarelo); outline-offset: 2px; }
+
+/* ---------- Botões (parecem teclas) ---------- */
+.btn {
+  --cor-borda: var(--aco);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  min-height: 3rem;
+  padding: 0 1.1rem;
+  border: 2px solid var(--cor-borda);
+  border-radius: .7rem;
+  background: var(--chapa);
+  color: var(--aco);
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 .22rem 0 var(--cor-borda);
+  transition: transform .06s, box-shadow .06s;
+}
+.btn:active:not(:disabled) { transform: translateY(.22rem); box-shadow: 0 0 0 var(--cor-borda); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+
+.btn-principal { --cor-borda: var(--azul-escuro); background: var(--azul); color: #fff; }
+.btn-perigo    { --cor-borda: var(--vermelho-escuro); background: var(--vermelho); color: #fff; }
+.btn-escuro    { --cor-borda: #0A141A; background: var(--aco-medio); color: #fff; }
+.btn-claro     { --cor-borda: var(--linha); background: var(--chapa); }
+.btn-grande    { min-height: 3.6rem; font-size: 1.25rem; }
+.btn-pequeno   { min-height: 2.4rem; padding: 0 .9rem; font-size: .95rem; }
+.btn-icone     { width: 3rem; padding: 0; }
+.btn-icone svg { width: 1.4rem; height: 1.4rem; }
+
+/* ---------- Campos ---------- */
+.campo { display: flex; flex-direction: column; gap: .3rem; }
+.campo > span { font-size: .95rem; font-weight: 700; color: var(--tinta-suave); }
+
+input[type="text"], input[type="password"] {
+  box-sizing: border-box;
+  width: 100%;
+  height: 3rem;
+  padding: 0 .9rem;
+  border: 2px solid var(--linha);
+  border-radius: .6rem;
+  background: var(--chapa);
+  color: var(--aco);
+  font-size: 1.2rem;
+  user-select: text;
+  -webkit-user-select: text;
+}
+input:focus { outline: none; border-color: var(--azul); box-shadow: 0 0 0 3px rgba(13, 92, 125, .25); }
+
+.campo-senha { display: flex; gap: .5rem; }
+.campo-senha .btn { min-width: 4.2rem; padding: 0 .6rem; }
+
+.erro-form { color: var(--vermelho-escuro); font-weight: 700; }
+.dica { color: var(--tinta-suave); font-size: .95rem; }
+
+/* =====================================================================
+   LOGIN
+   ===================================================================== */
+.tela-login {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  height: calc(100vh - var(--altura-teclado));
+}
+
+.login-marca {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: .9rem;
+  padding: 2rem 3.5rem 2rem 2rem;
+  background: var(--aco);
+  color: #fff;
+}
+.icone-marca { width: 3.6rem; height: 3.6rem; }
+.login-marca h1 { font-size: 2.7rem; }
+.login-marca p { font-size: 1.15rem; color: #B9C8D0; }
+
+/* Escala de régua decorativa na borda do painel */
+.login-marca::before, .login-marca::after {
+  content: "";
+  position: absolute;
+  top: 0; bottom: 0; right: 0;
+}
+.login-marca::before {
+  width: 1rem;
+  background: repeating-linear-gradient(to bottom, #6F8896 0 2px, transparent 2px 1rem);
+}
+.login-marca::after {
+  width: 2rem;
+  background: repeating-linear-gradient(to bottom, #B9C8D0 0 3px, transparent 3px 5rem);
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: .8rem;
+  padding: 1.2rem 2.2rem;
+  overflow-y: auto;
+}
+
+.abas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .25rem;
+  padding: .25rem;
+  border-radius: .8rem;
+  background: #CFD5D9;
+}
+.aba {
+  min-height: 2.7rem;
+  border: 0;
+  border-radius: .6rem;
+  background: transparent;
+  color: var(--tinta-suave);
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.aba[aria-selected="true"] { background: var(--chapa); color: var(--aco); box-shadow: 0 1px 3px rgba(20, 34, 43, .25); }
+
+/* Com o teclado aberto, o painel da marca some para dar espaço ao formulário */
+body.teclado-aberto .tela-login { grid-template-columns: 1fr; }
+body.teclado-aberto .login-marca { display: none; }
+body.teclado-aberto .login-form { justify-content: flex-start; padding-top: .8rem; padding-bottom: .8rem; gap: .55rem; }
+
+/* =====================================================================
+   ÁREA DE TRABALHO
+   ===================================================================== */
+#app {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - var(--altura-teclado));
+  background: var(--aco);
+}
+
+.topo {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+  height: 3.1rem;
+  padding: 0 .9rem;
+  color: #fff;
+}
+.marca { display: flex; align-items: center; gap: .6rem; margin-right: auto; font: 700 1.3rem var(--fonte-titulo); }
+.marca svg { width: 1.9rem; height: 1.9rem; }
+.usuario { font-weight: 600; color: #D5E0E6; }
+
+.corpo { flex: 1; display: flex; min-height: 0; }
+
+/* ----- Coluna da régua ----- */
+.coluna-regua {
+  flex: none;
+  width: 9.6rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+  padding: .2rem .8rem .8rem .9rem;
+  color: #fff;
+}
+
+.leitura-altura {
+  padding: .35rem .7rem .45rem;
+  border-radius: .7rem;
+  background: var(--amarelo);
+  color: var(--aco);
+}
+.leitura-altura small { display: block; font-size: .85rem; font-weight: 700; }
+.leitura-altura strong { display: flex; align-items: baseline; gap: .25rem; font: 700 2.3rem/1 var(--fonte-titulo); font-variant-numeric: tabular-nums; }
+.unidade { font-size: 1.05rem; }
+
+.regua { flex: 1; position: relative; min-height: 4rem; }
+.regua-trilho { position: absolute; inset: .6rem 0; }
+.regua-linha { position: absolute; left: 2.6rem; top: 0; bottom: 0; width: 2px; background: #6F8896; }
+
+.regua-marca { position: absolute; left: 2.6rem; width: .5rem; border-top: 2px solid #8FA5B1; }
+.regua-marca.maior { width: .95rem; border-color: #C9D6DD; }
+.regua-marca span {
+  position: absolute;
+  right: calc(100% + .4rem);
+  top: 0;
+  transform: translateY(-50%);
+  font-size: .8rem;
+  color: #C9D6DD;
+  font-variant-numeric: tabular-nums;
+}
+
+.regua-etapa {
+  position: absolute;
+  left: 5.1rem;
+  transform: translateY(50%);
+  display: grid;
+  place-items: center;
+  width: 1.5rem; height: 1.5rem;
+  border-radius: 50%;
+  background: var(--chapa);
+  color: var(--aco);
+  font: 700 .85rem var(--fonte-titulo);
+}
+
+.regua-ponteiro {
+  position: absolute;
+  left: 0; right: 0;
+  height: 0;
+  border-top: 3px solid var(--amarelo);
+  transition: bottom .25s linear;
+}
+.regua-ponteiro::before {
+  content: "";
+  position: absolute;
+  right: 0; top: -.5rem;
+  border: .5rem solid transparent;
+  border-right-color: var(--amarelo);
+  border-left-width: 0;
+}
+
+.carga-texto { display: flex; justify-content: space-between; font-size: .85rem; color: #C9D6DD; }
+.carga-texto strong { color: #fff; font-size: 1rem; }
+.carga-barra { height: .7rem; margin-top: .3rem; border-radius: .35rem; background: #38505E; overflow: hidden; }
+#carga-preenchida { height: 100%; width: 0; background: var(--verde); transition: width .25s linear, background .25s; }
+#carga-preenchida[data-nivel="atencao"] { background: var(--amarelo); }
+#carga-preenchida[data-nivel="excedida"] { background: var(--vermelho); }
+
+.estado {
+  padding: .4rem .5rem;
+  border-radius: 2rem;
+  background: #38505E;
+  text-align: center;
+  font-size: .95rem;
+  font-weight: 700;
+}
+.estado[data-estado="subindo"], .estado[data-estado="descendo"] { background: var(--azul); }
+.estado[data-estado="emergencia"], .estado[data-estado="sobrecarga"] { background: var(--vermelho); }
+.estado[data-estado="erro"] { background: var(--amarelo); color: var(--aco); }
+
+/* ----- Área de conteúdo ----- */
+.conteudo {
+  flex: 1;
+  min-width: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: .7rem;
+  padding: .9rem 1rem .8rem;
+  border-top-left-radius: 1.1rem;
+  background: var(--concreto);
+}
+
+.aviso { padding: .6rem .9rem; border-radius: .7rem; background: var(--vermelho); color: #fff; font-weight: 700; }
+.aviso[data-tipo="erro"] { background: var(--amarelo); color: var(--aco); }
+
+.vista { flex: 1; display: flex; flex-direction: column; gap: .7rem; min-height: 0; }
+.vista-cabecalho { display: flex; align-items: center; gap: .6rem; }
+.vista-cabecalho h1 { margin-right: auto; font-size: 1.8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ----- Máquinas ----- */
+.grade-maquinas {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+  gap: .7rem;
+  align-content: start;
+  overflow-y: auto;
+  padding-bottom: .4rem;
+}
+.cartao-maquina {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: .5rem;
+  min-height: 5.4rem;
+  padding: .8rem .9rem;
+  border: 2px solid var(--linha);
+  border-radius: .9rem;
+  background: var(--chapa);
+  color: var(--aco);
+  text-align: left;
+  cursor: pointer;
+}
+.cartao-maquina:active { background: #D9DEE1; border-color: var(--azul); }
+.cartao-maquina strong { font: 700 1.45rem/1.1 var(--fonte-titulo); overflow-wrap: anywhere; }
+.cartao-maquina span { color: var(--tinta-suave); font-size: .95rem; }
+
+.vazio {
+  grid-column: 1 / -1;
+  padding: 1.2rem;
+  border: 2px dashed var(--linha);
+  border-radius: .9rem;
+  color: var(--tinta-suave);
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+/* ----- Etapas ----- */
+.lista-etapas { flex: 1; display: flex; flex-direction: column; gap: .55rem; margin: 0; padding: 0 0 .4rem; list-style: none; overflow-y: auto; }
+.etapa { display: flex; gap: .5rem; }
+.etapa-ir {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+  min-height: 3.7rem;
+  padding: 0 1rem 0 .7rem;
+  border: 2px solid var(--linha);
+  border-radius: .9rem;
+  background: var(--chapa);
+  color: var(--aco);
+  font-size: 1.15rem;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+.etapa-ir:active { background: #D9DEE1; border-color: var(--azul); }
+.etapa-num { flex: none; display: grid; place-items: center; width: 2.3rem; height: 2.3rem; border-radius: 50%; background: var(--aco); color: #fff; font: 700 1.2rem var(--fonte-titulo); }
+.etapa-nome { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.etapa-altura { color: var(--azul); font: 700 1.7rem var(--fonte-titulo); font-variant-numeric: tabular-nums; }
+.etapa .btn-icone { height: 3.7rem; width: 3.4rem; }
+
+/* ----- Cadastro de etapa ----- */
+.form-etapa { flex: 1; display: grid; grid-template-columns: 1fr 14rem; gap: 1rem; min-height: 0; overflow-y: auto; }
+.coluna-form { display: flex; flex-direction: column; gap: .7rem; }
+.coluna-form .btn-grande { margin-top: auto; }
+
+.leitura-form { display: flex; flex-direction: column; padding: .5rem .9rem; border: 2px solid var(--aco); border-radius: .8rem; background: var(--chapa); }
+.leitura-form > span { font-size: .9rem; font-weight: 700; color: var(--tinta-suave); }
+.leitura-form strong { font: 700 2.6rem/1.05 var(--fonte-titulo); font-variant-numeric: tabular-nums; }
+
+.coluna-jog { display: flex; flex-direction: column; gap: .6rem; }
+.jog {
+  --cor-borda: var(--azul-escuro);
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .7rem;
+  min-height: 3.6rem;
+  border: 2px solid var(--cor-borda);
+  border-radius: 1rem;
+  background: var(--azul);
+  color: #fff;
+  font: 700 1.6rem var(--fonte-titulo);
+  cursor: pointer;
+  box-shadow: 0 .3rem 0 var(--cor-borda);
+  transition: transform .06s, box-shadow .06s;
+}
+.jog svg { width: 1.5rem; height: 1.5rem; }
+.jog:active { transform: translateY(.3rem); box-shadow: 0 0 0 var(--cor-borda); }
+.jog-parar { --cor-borda: var(--vermelho-escuro); flex: 1.25; background: var(--vermelho); }
+.jog.ativo { --cor-borda: var(--amarelo-escuro); background: var(--amarelo); color: var(--aco); }
+
+/* =====================================================================
+   JANELAS, AVISOS E TECLADO
+   ===================================================================== */
+.sobreposicao {
+  position: fixed;
+  inset: 0 0 var(--altura-teclado) 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(20, 34, 43, .72);
+}
+body.teclado-aberto .sobreposicao:not(.sobreposicao-emergencia) { place-items: start center; }
+
+.modal {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: .8rem;
+  width: min(31rem, 100%);
+  padding: 1.1rem 1.2rem;
+  border: 2px solid var(--aco);
+  border-radius: 1rem;
+  background: var(--chapa);
+}
+.modal h2 { font-size: 1.7rem; }
+.modal p { font-size: 1.05rem; color: var(--tinta-suave); }
+.modal-botoes { display: flex; justify-content: flex-end; gap: .6rem; }
+
+.modal-movendo { align-items: stretch; text-align: center; }
+.movendo-etapa { font-weight: 700; color: var(--aco) !important; }
+.movendo-alvo { display: flex; flex-direction: column; }
+.movendo-alvo > span { font-size: .95rem; font-weight: 700; color: var(--tinta-suave); }
+.movendo-alvo strong { font: 700 3.4rem/1 var(--fonte-titulo); font-variant-numeric: tabular-nums; color: var(--azul); }
+.modal-movendo.concluido .movendo-alvo strong { color: var(--verde); }
+.progresso { height: .9rem; border-radius: .45rem; background: #D3D9DC; overflow: hidden; }
+#movendo-progresso { height: 100%; width: 0; background: var(--amarelo); transition: width .25s linear; }
+.modal-movendo.concluido #movendo-progresso { background: var(--verde); }
+
+.sobreposicao-emergencia { z-index: 90; inset: 0; background: var(--vermelho); color: #fff; text-align: center; }
+.emergencia-conteudo { display: flex; flex-direction: column; align-items: center; gap: .9rem; max-width: 34rem; }
+.emergencia-conteudo svg { width: 5rem; height: 5rem; }
+.emergencia-conteudo h2 { font-size: 3rem; }
+.emergencia-conteudo p { font-size: 1.3rem; line-height: 1.35; }
+.emergencia-conteudo .btn { min-width: 14rem; }
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--altura-teclado) + 1rem);
+  z-index: 80;
+  max-width: 80vw;
+  padding: .7rem 1.2rem;
+  border-radius: .7rem;
+  background: var(--aco);
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-align: center;
+  transform: translateX(-50%);
+  box-shadow: 0 .3rem 1rem rgba(0, 0, 0, .35);
+}
+.toast[data-tipo="erro"] { background: var(--vermelho); }
+.toast[data-tipo="ok"] { background: var(--verde); }
+
+/* ----- Teclado virtual ----- */
+.teclado {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 70;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: .3rem;
+  padding: .4rem .5rem .5rem;
+  background: #1B2A33;
+}
+.tecla-linha { display: flex; justify-content: center; gap: .3rem; }
+.tecla {
+  flex: 1 1 0;
+  max-width: 4.6rem;
+  height: 2.5rem;
+  padding: 0;
+  border: 0;
+  border-radius: .45rem;
+  background: #35495A;
+  color: #fff;
+  font-size: 1.15rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 .15rem 0 #0B151B;
+}
+.tecla:active { background: #4C677B; transform: translateY(.15rem); box-shadow: none; }
+.tecla-larga { flex: 1.7; max-width: none; font-size: 1rem; }
+.tecla-espaco { flex: 5; max-width: none; }
+.tecla-ok { background: var(--azul); }
+.tecla-ativa { background: var(--amarelo); color: var(--aco); }
+
+/* ----- Painel de teste (só no modo simulado) ----- */
+.simulacao { position: fixed; right: .6rem; bottom: calc(var(--altura-teclado) + .6rem); z-index: 95; display: flex; flex-direction: column; align-items: flex-end; gap: .4rem; }
+.simulacao-alca { padding: .3rem .7rem; border: 1px dashed #8FA5B1; border-radius: 1rem; background: rgba(20, 34, 43, .85); color: #C9D6DD; font-size: .8rem; cursor: pointer; }
+.simulacao-corpo { display: flex; flex-direction: column; gap: .6rem; width: 14rem; padding: .8rem; border-radius: .8rem; background: var(--aco); color: #fff; font-size: .9rem; }
+.simulacao-corpo input { width: 100%; }
+
+/* =====================================================================
+   TELAS ESTREITAS (celular ou janela pequena): régua vai para o topo
+   ===================================================================== */
+@media (max-width: 640px) {
+  .corpo { flex-direction: column; }
+  .coluna-regua { width: auto; flex-direction: row; align-items: center; flex-wrap: wrap; padding: .2rem .8rem .6rem; }
+  .regua { display: none; }
+  .conteudo { border-top-left-radius: 1.1rem; border-top-right-radius: 1.1rem; }
+  .tela-login { grid-template-columns: 1fr; }
+  .login-marca { display: none; }
+  .form-etapa { grid-template-columns: 1fr; }
+  .coluna-jog { flex-direction: row; min-height: 4rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}

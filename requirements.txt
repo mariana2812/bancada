@@ -1,0 +1,4 @@
+flask>=3.0
+# Na Raspberry Pi o RPi.GPIO já vem instalado. Se faltar:
+#   sudo apt install python3-rpi.gpio
+# Na Raspberry Pi 5, use:  pip install rpi-lgpio

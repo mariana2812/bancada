@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <title>Bancada Pantográfica</title>
+  <link rel="stylesheet" href="/static/css/estilo.css">
+</head>
+<body>
+
+  <!-- ============================================================
+       TELA DE LOGIN
+       ============================================================ -->
+  <section id="tela-login" class="tela-login">
+    <div class="login-marca">
+      <svg class="icone-marca" viewBox="0 0 48 48" aria-hidden="true">
+        <rect width="48" height="48" rx="10" fill="#F5B700"/>
+        <path d="M12 12 L36 36 M36 12 L12 36" stroke="#14222B" stroke-width="4" stroke-linecap="round"/>
+        <circle cx="12" cy="12" r="3.5" fill="#14222B"/><circle cx="36" cy="12" r="3.5" fill="#14222B"/>
+        <circle cx="12" cy="36" r="3.5" fill="#14222B"/><circle cx="36" cy="36" r="3.5" fill="#14222B"/>
+      </svg>
+      <h1 id="login-titulo">Bancada Pantográfica</h1>
+      <p>Cada etapa da montagem na altura certa.</p>
+    </div>
+
+    <form id="form-login" class="login-form" autocomplete="off" novalidate>
+      <div class="abas" role="tablist">
+        <button type="button" class="aba" role="tab" id="aba-entrar" aria-selected="true">Entrar</button>
+        <button type="button" class="aba" role="tab" id="aba-criar" aria-selected="false">Criar conta</button>
+      </div>
+
+      <label class="campo" id="campo-nome" hidden>
+        <span>Seu nome</span>
+        <input id="login-nome" type="text" inputmode="none" data-cap="palavras" placeholder="Ex.: Maria Souza" maxlength="60">
+      </label>
+
+      <label class="campo">
+        <span>Usuário</span>
+        <input id="login-usuario" type="text" inputmode="none" placeholder="Ex.: maria" maxlength="30"
+               autocapitalize="none" autocorrect="off">
+      </label>
+
+      <label class="campo">
+        <span>Senha</span>
+        <div class="campo-senha">
+          <input id="login-senha" type="password" inputmode="none" placeholder="Mínimo 4 caracteres" maxlength="40">
+          <button type="button" id="btn-ver-senha" class="btn btn-claro">Ver</button>
+        </div>
+      </label>
+
+      <p id="login-erro" class="erro-form" role="alert" hidden></p>
+      <button type="submit" id="btn-login" class="btn btn-principal btn-grande">Entrar</button>
+    </form>
+  </section>
+
+  <!-- ============================================================
+       ÁREA DE TRABALHO
+       ============================================================ -->
+  <div id="app" hidden>
+
+    <header class="topo">
+      <div class="marca">
+        <svg viewBox="0 0 48 48" aria-hidden="true">
+          <rect width="48" height="48" rx="10" fill="#F5B700"/>
+          <path d="M12 12 L36 36 M36 12 L12 36" stroke="#14222B" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+        <span id="topo-nome">Bancada Pantográfica</span>
+      </div>
+      <span class="usuario"><span id="usuario-nome"></span></span>
+      <button id="btn-sair" class="btn btn-escuro btn-pequeno">Sair</button>
+    </header>
+
+    <div class="corpo">
+
+      <!-- Coluna da régua: altura, posição, carga e estado -->
+      <aside class="coluna-regua" aria-label="Estado da mesa">
+        <div class="leitura-altura">
+          <small>Altura</small>
+          <strong><span id="altura-valor">--</span><span class="unidade">cm</span></strong>
+        </div>
+
+        <div class="regua" aria-hidden="true">
+          <div class="regua-trilho" id="regua-trilho">
+            <div class="regua-linha"></div>
+            <div id="regua-marcas"></div>
+            <div id="regua-etapas"></div>
+            <div class="regua-ponteiro" id="regua-ponteiro"></div>
+          </div>
+        </div>
+
+        <div class="carga">
+          <div class="carga-texto">
+            <span>Carga</span>
+            <span><strong id="carga-valor">0,0</strong> / <span id="carga-max">20</span> kg</span>
+          </div>
+          <div class="carga-barra"><div id="carga-preenchida"></div></div>
+        </div>
+
+        <div class="estado" id="estado-chip" data-estado="parada">Parada</div>
+      </aside>
+
+      <main class="conteudo">
+        <div id="aviso" class="aviso" role="alert" hidden></div>
+
+        <!-- Vista 1: escolher a máquina -->
+        <section id="vista-maquinas" class="vista">
+          <div class="vista-cabecalho">
+            <h1>Escolha a máquina</h1>
+            <button id="btn-nova-maquina" class="btn btn-principal">Nova máquina</button>
+          </div>
+          <div id="lista-maquinas" class="grade-maquinas"></div>
+        </section>
+
+        <!-- Vista 2: etapas da máquina -->
+        <section id="vista-etapas" class="vista" hidden>
+          <div class="vista-cabecalho">
+            <button id="btn-voltar-maquinas" class="btn btn-claro" aria-label="Voltar para as máquinas"></button>
+            <h1 id="titulo-maquina"></h1>
+            <button id="btn-excluir-maquina" class="btn btn-claro btn-icone" aria-label="Excluir máquina"></button>
+            <button id="btn-nova-etapa" class="btn btn-principal">Nova etapa</button>
+          </div>
+          <p class="dica" id="dica-etapas">Toque em uma etapa para ajustar a mesa.</p>
+          <ol id="lista-etapas" class="lista-etapas"></ol>
+        </section>
+
+        <!-- Vista 3: cadastrar ou editar uma etapa -->
+        <section id="vista-form" class="vista" hidden>
+          <div class="vista-cabecalho">
+            <h1 id="titulo-form">Nova etapa</h1>
+            <button id="btn-cancelar-form" class="btn btn-claro">Cancelar</button>
+          </div>
+
+          <div class="form-etapa">
+            <div class="coluna-form">
+              <label class="campo">
+                <span>Nome da etapa</span>
+                <input id="etapa-nome" type="text" inputmode="none" data-cap="frase"
+                       placeholder="Ex.: Fixar a base" maxlength="60">
+              </label>
+              <p class="dica" id="dica-form">Suba ou desça a mesa, toque em Parar na altura certa e salve.</p>
+              <div class="leitura-form">
+                <span>Altura da mesa</span>
+                <strong><span id="form-altura">--</span> cm</strong>
+              </div>
+              <button id="btn-salvar-etapa" class="btn btn-principal btn-grande">Salvar etapa</button>
+            </div>
+
+            <div class="coluna-jog" aria-label="Controle da mesa">
+              <button id="jog-subir" class="jog jog-mover">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5 L21 17 H3 Z" fill="currentColor"/></svg>Subir
+              </button>
+              <button id="jog-parar" class="jog jog-parar">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="5" width="14" height="14" rx="2" fill="currentColor"/></svg>Parar
+              </button>
+              <button id="jog-descer" class="jog jog-mover">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19 L3 7 H21 Z" fill="currentColor"/></svg>Descer
+              </button>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       JANELAS SOBRE A TELA
+       ============================================================ -->
+
+  <!-- Cadastrar máquina -->
+  <div id="modal-maquina" class="sobreposicao" hidden>
+    <div class="modal" role="dialog" aria-labelledby="modal-maquina-titulo">
+      <h2 id="modal-maquina-titulo">Nova máquina</h2>
+      <label class="campo">
+        <span>Nome da máquina</span>
+        <input id="maquina-nome" type="text" inputmode="none" data-cap="frase" placeholder="Ex.: Prensa 01" maxlength="40">
+      </label>
+      <div class="modal-botoes">
+        <button id="btn-cancelar-maquina" class="btn btn-claro">Cancelar</button>
+        <button id="btn-salvar-maquina" class="btn btn-principal">Cadastrar máquina</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirmar exclusão -->
+  <div id="modal-confirmar" class="sobreposicao" hidden>
+    <div class="modal" role="alertdialog" aria-labelledby="confirmar-titulo">
+      <h2 id="confirmar-titulo"></h2>
+      <p id="confirmar-texto"></p>
+      <div class="modal-botoes">
+        <button id="btn-confirmar-nao" class="btn btn-claro">Cancelar</button>
+        <button id="btn-confirmar-sim" class="btn btn-perigo">Excluir</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mesa em movimento até uma etapa -->
+  <div id="modal-movendo" class="sobreposicao" hidden>
+    <div class="modal modal-movendo" role="dialog" aria-labelledby="movendo-titulo">
+      <h2 id="movendo-titulo">Ajustando a mesa</h2>
+      <p id="movendo-etapa" class="movendo-etapa"></p>
+      <div class="movendo-alvo"><span>Indo para</span><strong><span id="movendo-alvo-valor">--</span> cm</strong></div>
+      <div class="progresso"><div id="movendo-progresso"></div></div>
+      <button id="btn-movendo-parar" class="btn btn-perigo btn-grande">Parar</button>
+    </div>
+  </div>
+
+  <!-- Emergência: cobre tudo -->
+  <div id="tela-emergencia" class="sobreposicao sobreposicao-emergencia" hidden>
+    <div class="emergencia-conteudo" role="alertdialog" aria-labelledby="emergencia-titulo">
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <path d="M24 5 L45 41 H3 Z" fill="#fff"/>
+        <path d="M24 17 V30" stroke="#C62E1C" stroke-width="4.5" stroke-linecap="round"/>
+        <circle cx="24" cy="35.5" r="2.8" fill="#C62E1C"/>
+      </svg>
+      <h2 id="emergencia-titulo">Emergência acionada</h2>
+      <p>A mesa está parada e travada. Destrave o botão de emergência e toque em Reiniciar.</p>
+      <button id="btn-reiniciar" class="btn btn-claro btn-grande">Reiniciar</button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" hidden></div>
+
+  <!-- Teclado virtual (montado pelo teclado.js) -->
+  <div id="teclado" class="teclado" hidden></div>
+
+  <!-- Painel de teste: só aparece no modo simulado -->
+  <div id="painel-simulacao" class="simulacao" hidden>
+    <button id="btn-simulacao" class="simulacao-alca">Simulação</button>
+    <div id="simulacao-corpo" class="simulacao-corpo" hidden>
+      <label>Carga na mesa: <strong id="simulacao-carga-valor">0</strong> kg
+        <input id="simulacao-carga" type="range" min="0" max="30" step="0.5" value="0">
+      </label>
+      <button id="simulacao-emergencia" class="btn btn-pequeno btn-perigo">Acionar emergência</button>
+    </div>
+  </div>
+
+  <script src="/static/js/api.js"></script>
+  <script src="/static/js/teclado.js"></script>
+  <script src="/static/js/painel.js"></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
