@@ -19,7 +19,7 @@ PORTA = 5000
 # True  = simula motor e sensores (para testar no computador)
 # False = usa o hardware real (Raspberry Pi)
 # None  = automático: simula sozinho se não estiver numa Raspberry Pi
-SIMULAR = True
+SIMULAR = False
 
 
 # =====================================================================
