@@ -17,7 +17,7 @@ USAR_ENA = False
 ENA_NIVEL_HABILITA = 0
 
 VELOCIDADE_PASSOS_S = 200
-DURACAO_TESTE_S = 2.0
+DURACAO_TESTE_S = 10.0
 
 
 def girar(nivel_direcao):
