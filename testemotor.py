@@ -1,32 +1,62 @@
-"""Gera pulsos diretamente para testar o motor e o driver."""
+"""Teste independente do motor + driver, com o eixo livre da bancada.
+
+Execute na Raspberry Pi: python3 testemotor.py
+Nao usa config.py, sensores, interface ou controles da mesa.
+"""
 
 import time
 
 import RPi.GPIO as GPIO
 
-import config
+# Numeracao BCM: GPIO 17 = pino fisico 11; GPIO 27 = pino fisico 13.
+# Ajuste estes valores conforme os fios do teste separado.
+PINO_PUL = 17
+PINO_DIR = 27
+PINO_ENA = 22
+USAR_ENA = False
+ENA_NIVEL_HABILITA = 0
+
+VELOCIDADE_PASSOS_S = 200
+DURACAO_TESTE_S = 2.0
 
 
-VELOCIDADE_PASSOS_S = 2000
-DURACAO_TESTE_S = 10.0
+def girar(nivel_direcao):
+    GPIO.output(PINO_DIR, nivel_direcao)
+    if USAR_ENA:
+        GPIO.output(PINO_ENA, ENA_NIVEL_HABILITA)
+    time.sleep(0.01)
+
+    meio_periodo = 1 / (2 * VELOCIDADE_PASSOS_S)
+    fim = time.monotonic() + DURACAO_TESTE_S
+    try:
+        while time.monotonic() < fim:
+            GPIO.output(PINO_PUL, GPIO.HIGH)
+            time.sleep(meio_periodo)
+            GPIO.output(PINO_PUL, GPIO.LOW)
+            time.sleep(meio_periodo)
+    finally:
+        GPIO.output(PINO_PUL, GPIO.LOW)
+        if USAR_ENA:
+            GPIO.output(PINO_ENA, 1 - ENA_NIVEL_HABILITA)
 
 
 def main():
-    pwm = None
+    pinos = [PINO_PUL, PINO_DIR] + ([PINO_ENA] if USAR_ENA else [])
     try:
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(False)
-        GPIO.setup(config.PINO_PUL, GPIO.OUT, initial=GPIO.LOW)
-        GPIO.setup(config.PINO_DIR, GPIO.OUT, initial=GPIO.LOW)
+        GPIO.setup(PINO_PUL, GPIO.OUT, initial=GPIO.LOW)
+        GPIO.setup(PINO_DIR, GPIO.OUT, initial=GPIO.LOW)
 
-        if config.USAR_ENA:
+        if USAR_ENA:
             GPIO.setup(
-                config.PINO_ENA,
+                PINO_ENA,
                 GPIO.OUT,
-                initial=1 - config.ENA_NIVEL_HABILITA,
+                initial=1 - ENA_NIVEL_HABILITA,
             )
 
         print("Teste direto do driver. Prenda o motor e deixe o eixo livre.")
+        print(f"Pinos BCM: PUL={PINO_PUL}, DIR={PINO_DIR}; ENA usado: {USAR_ENA}.")
         print(f"Cada comando envia {VELOCIDADE_PASSOS_S} passos/s por {DURACAO_TESTE_S}s.")
         print("Digite s para um sentido, d para o outro ou q para sair.")
 
@@ -38,27 +68,12 @@ def main():
                 print("Comando invalido. Digite s, d ou q.")
                 continue
 
-            nivel_subir = config.DIRECAO_SUBIR_NIVEL
-            nivel_direcao = nivel_subir if comando == "s" else 1 - nivel_subir
-            GPIO.output(config.PINO_DIR, nivel_direcao)
-            time.sleep(0.01)
-
-            if config.USAR_ENA:
-                GPIO.output(config.PINO_ENA, config.ENA_NIVEL_HABILITA)
-
-            pwm = GPIO.PWM(config.PINO_PUL, VELOCIDADE_PASSOS_S)
-            pwm.start(50)
-            time.sleep(DURACAO_TESTE_S)
-            pwm.stop()
-            pwm = None
-            GPIO.output(config.PINO_PUL, GPIO.LOW)
+            girar(1 if comando == "s" else 0)
             print("Comando concluido; motor sem pulsos.")
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, EOFError):
         print("\nTeste interrompido.")
     finally:
-        if pwm is not None:
-            pwm.stop()
-        GPIO.cleanup()
+        GPIO.cleanup(pinos)
 
 
 if __name__ == "__main__":
