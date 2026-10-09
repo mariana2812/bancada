@@ -16,8 +16,12 @@ PINO_ENA = 22
 USAR_ENA = False
 ENA_NIVEL_HABILITA = 0
 
-VELOCIDADE_PASSOS_S = 200
-DURACAO_TESTE_S = 10.0
+# Deve coincidir com o ajuste Pulse/rev nas chaves do driver.
+PULSOS_POR_ROTACAO = 2000
+ROTACOES_POR_COMANDO = 1
+DURACAO_TESTE_S = 10.0  # tempo nominal; o sistema pode acrescentar atrasos
+PULSOS_POR_COMANDO = PULSOS_POR_ROTACAO * ROTACOES_POR_COMANDO
+VELOCIDADE_PASSOS_S = PULSOS_POR_COMANDO / DURACAO_TESTE_S
 
 
 def girar(nivel_direcao):
@@ -27,9 +31,9 @@ def girar(nivel_direcao):
     time.sleep(0.01)
 
     meio_periodo = 1 / (2 * VELOCIDADE_PASSOS_S)
-    fim = time.monotonic() + DURACAO_TESTE_S
     try:
-        while time.monotonic() < fim:
+        # Conte os pulsos para completar a volta, mesmo com atrasos do Linux.
+        for _ in range(PULSOS_POR_COMANDO):
             GPIO.output(PINO_PUL, GPIO.HIGH)
             time.sleep(meio_periodo)
             GPIO.output(PINO_PUL, GPIO.LOW)
@@ -57,7 +61,11 @@ def main():
 
         print("Teste direto do driver. Prenda o motor e deixe o eixo livre.")
         print(f"Pinos BCM: PUL={PINO_PUL}, DIR={PINO_DIR}; ENA usado: {USAR_ENA}.")
-        print(f"Cada comando envia {VELOCIDADE_PASSOS_S} passos/s por {DURACAO_TESTE_S}s.")
+        print(f"Configure o driver para {PULSOS_POR_ROTACAO} pulsos por rotacao.")
+        print(
+            f"Cada comando envia {PULSOS_POR_COMANDO} pulsos "
+            f"({ROTACOES_POR_COMANDO} volta), em aproximadamente {DURACAO_TESTE_S}s."
+        )
         print("Digite s para um sentido, d para o outro ou q para sair.")
 
         while True:
