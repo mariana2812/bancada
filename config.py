@@ -25,7 +25,7 @@ SIMULAR = False
 # =====================================================================
 # 2) LIMITES DE SEGURANÇA
 # =====================================================================
-ALTURA_MINIMA_CM = 60.0     # PREENCHER: menor altura que a mesa pode chegar
+ALTURA_MINIMA_CM = 140.0    # Altura minima de 140 cm informada pela usuaria
 ALTURA_MAXIMA_CM = 360.0    # Altura maxima de 360 cm confirmada pela usuaria
 CARGA_MAXIMA_KG = 10.0      # Limite solicitado; célula de 20 kg. Confirmar resistência da estrutura.
 
