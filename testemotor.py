@@ -13,7 +13,7 @@ import RPi.GPIO as GPIO
 PINO_PUL = 17
 PINO_DIR = 27
 PINO_ENA = 22
-USAR_ENA = False
+USAR_ENA = True
 ENA_NIVEL_HABILITA = 0
 
 # Deve coincidir com o ajuste Pulse/rev nas chaves do driver.

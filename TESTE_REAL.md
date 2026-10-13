@@ -11,8 +11,8 @@ de confirmar os valores abaixo. Execute apenas um programa por vez.
 | Raspberry Pi | Raspberry Pi 4 confirmado; falta versao do Raspberry Pi OS |
 | Motor e driver | Etiquetas nas fotos: motor SM1.8-D19E8-CS e driver DR-SB050DC056D-CS; faltam corrente nominal do motor, tensao da fonte do driver e posicoes atuais das chaves |
 | Pulsos por volta | 2000 no teste e no config.py; confirmar esse ajuste no driver |
-| Ligacao do driver | Informar onde PUL+, PUL-, DIR+, DIR-, ENA+, ENA- estao ligados e se existe conversor de nivel |
-| ENA | USAR_ENA = False; confirmar se esta desconectado e se o driver fica habilitado assim |
+| Ligacao do driver | GPIOs do codigo confirmados: PUL=17, DIR=27, ENA=22. Fonte de 24 V informada. Confirmar circuito de interface e retornos PUL-/DIR-/ENA- |
+| ENA | USAR_ENA = True, GPIO22 (pino fisico 15), conforme informado. ENA_NIVEL_HABILITA = 0 ainda precisa ser confirmado no manual |
 | Sentido | Motor ainda nao girou; DIRECAO_SUBIR_NIVEL = 1 ainda nao confirmado |
 | Velocidade | Teste separado e bancada: 2000 pulsos/s nominais, conforme solicitado. Validar sem perda de passos no hardware |
 | Fuso | FUSO_PASSO_MM = 8.0; informar avanco por volta e eventual reducao entre motor e fuso |

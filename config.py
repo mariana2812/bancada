@@ -37,7 +37,7 @@ PINO_PUL = 17               # PREENCHER: GPIO ligado em PUL+ do driver
 PINO_DIR = 27               # PREENCHER: GPIO ligado em DIR+ do driver
 PINO_ENA = 22               # PREENCHER: GPIO ligado em ENA+ (só se USAR_ENA = True)
 
-USAR_ENA = False            # False = deixa ENA desligado (driver sempre habilitado)
+USAR_ENA = True             # ENA usado no GPIO22, conforme informado
 ENA_NIVEL_HABILITA = 0      # nível do pino que HABILITA o motor (confira no manual do driver)
 
 DIRECAO_SUBIR_NIVEL = 1     # se a mesa DESCER ao tocar em "Subir", troque para 0
