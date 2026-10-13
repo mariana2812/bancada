@@ -16,7 +16,7 @@ de confirmar os valores abaixo. Execute apenas um programa por vez.
 | Sentido | Motor ainda nao girou; DIRECAO_SUBIR_NIVEL = 1 ainda nao confirmado |
 | Velocidade | Teste separado: 200 pulsos/s; bancada: 1600 pulsos/s. Informar velocidade que funcionou sem perder passos |
 | Fuso | FUSO_PASSO_MM = 8.0; informar avanco por volta e eventual reducao entre motor e fuso |
-| Alturas | ALTURA_MINIMA_CM = 60 e ALTURA_MAXIMA_CM = 120 sao valores a confirmar por medicao; usar limites operacionais com margem dos batentes |
+| Alturas | ALTURA_MAXIMA_CM = 360 (360 cm confirmados pela usuaria); ALTURA_MINIMA_CM = 60 ainda provisoria. Confirmar minimo e margem dos batentes |
 | Carga | Celula de 20 kg informada; CARGA_MAXIMA_KG = 10 conforme limite solicitado. Isso nao comprova capacidade mecanica da estrutura |
 | Sensor de altura | Apontado para baixo confirmado; SENSOR_APONTA_PARA_BAIXO = True. Faltam modelo, montagem e alvo |
 | Offset de altura | ALTURA_OFFSET_CM = 0 e provisório; enviar resultado da opcao 1 do calibrar.py |
