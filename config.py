@@ -27,7 +27,7 @@ SIMULAR = False
 # =====================================================================
 ALTURA_MINIMA_CM = 60.0     # PREENCHER: menor altura que a mesa pode chegar
 ALTURA_MAXIMA_CM = 120.0    # PREENCHER: maior altura que a mesa pode chegar
-CARGA_MAXIMA_KG = 20.0      # A célula de carga suporta 20 kg (pode usar menos, p/ ter margem)
+CARGA_MAXIMA_KG = 10.0      # Limite solicitado; célula de 20 kg. Confirmar resistência da estrutura.
 
 
 # =====================================================================
@@ -44,7 +44,7 @@ DIRECAO_SUBIR_NIVEL = 1     # se a mesa DESCER ao tocar em "Subir", troque para 
 
 PASSOS_POR_VOLTA = 2000     # CONFIRMAR: driver ajustado para 2000 pulsos por volta
 FUSO_PASSO_MM = 8.0         # PREENCHER: quanto o fuso avança (mm) a cada volta do motor
-VELOCIDADE_PASSOS_S = 1600  # velocidade do motor em passos por segundo (1600 = 1 volta/s)
+VELOCIDADE_PASSOS_S = 1600  # 0,8 volta/s com 2000 pulsos/volta; ainda precisa ser testada
 
 
 # =====================================================================

@@ -8,22 +8,45 @@ de confirmar os valores abaixo. Execute apenas um programa por vez.
 
 | Dado | Valor atual / informacao necessaria |
 |---|---|
-| Raspberry Pi | Modelo exato e versao do Raspberry Pi OS |
-| Motor e driver | Modelo, corrente nominal do motor, tensao da fonte e foto da tabela/chaves do driver |
+| Raspberry Pi | Raspberry Pi 4 confirmado; falta versao do Raspberry Pi OS |
+| Motor e driver | Etiquetas nas fotos: motor SM1.8-D19E8-CS e driver DR-SB050DC056D-CS; faltam corrente nominal do motor, tensao da fonte do driver e posicoes atuais das chaves |
 | Pulsos por volta | 2000 no teste e no config.py; confirmar esse ajuste no driver |
 | Ligacao do driver | Informar onde PUL+, PUL-, DIR+, DIR-, ENA+, ENA- estao ligados e se existe conversor de nivel |
 | ENA | USAR_ENA = False; confirmar se esta desconectado e se o driver fica habilitado assim |
-| Sentido | DIRECAO_SUBIR_NIVEL = 1; informar se o comando subir realmente sobe |
+| Sentido | Motor ainda nao girou; DIRECAO_SUBIR_NIVEL = 1 ainda nao confirmado |
 | Velocidade | Teste separado: 200 pulsos/s; bancada: 1600 pulsos/s. Informar velocidade que funcionou sem perder passos |
 | Fuso | FUSO_PASSO_MM = 8.0; informar avanco por volta e eventual reducao entre motor e fuso |
 | Alturas | ALTURA_MINIMA_CM = 60 e ALTURA_MAXIMA_CM = 120 sao valores a confirmar por medicao; usar limites operacionais com margem dos batentes |
-| Carga | CARGA_MAXIMA_KG = 20; informar limite seguro da estrutura e capacidade real da celula |
-| Sensor de altura | Modelo, posicao, alvo e sentido; SENSOR_APONTA_PARA_BAIXO = True |
+| Carga | Celula de 20 kg informada; CARGA_MAXIMA_KG = 10 conforme limite solicitado. Isso nao comprova capacidade mecanica da estrutura |
+| Sensor de altura | Apontado para baixo confirmado; SENSOR_APONTA_PARA_BAIXO = True. Faltam modelo, montagem e alvo |
 | Offset de altura | ALTURA_OFFSET_CM = 0 e provisório; enviar resultado da opcao 1 do calibrar.py |
 | HX711 | Modelo, pinos DT/SCK, alimentacao e ligacao dos fios da celula |
 | Calibracao de carga | HX711_FATOR = 1 e provisório; enviar resultado da opcao 2 e massa conhecida em kg |
 | Tara | TARA_AO_INICIAR = True: iniciar com a mesa vazia; se False, preencher HX711_OFFSET da calibracao |
-| Emergencia | PINO_EMERGENCIA = 16, EMERGENCIA_CONTATO_NF = True; confirmar contato NF/NA e corte eletrico do driver |
+| Emergencia | Deve parar a bancada. A aplicacao ja para e trava ao detectar acionamento; PINO_EMERGENCIA = 16 e contato NF ainda precisam ser confirmados, assim como o corte eletrico |
+
+O limite de carga atual bloqueia a subida acima de 10 kg; a descida continua
+permitida. A emergencia bloqueia ambos os sentidos ate liberar o botao e
+reiniciar pela interface. O teste separado do motor nao le esse botao.
+
+## Motor ainda sem movimento
+
+As fotos mostram as etiquetas, mas nao permitem seguir todos os fios ate
+o Pi nem confirmar as posicoes das chaves. Para diagnosticar, enviar:
+
+- Tensao medida entre +Vdc e GND do driver e estado do indicador ALARM/PWR.
+  A etiqueta desse driver indica alimentacao de 24 a 50 VDC.
+- Ligacoes completas de PUL+/PUL-, DIR+/DIR- e ENA+/ENA-, incluindo eventual
+  circuito de interface entre GPIO e driver.
+- Posicoes SW1 a SW8 e corrente nominal do motor (nao escolher pela corrente
+  maxima impressa no driver).
+- Pares de bobinas conectados a A+/A- e B+/B-, identificados com alimentacao
+  desligada; nao deduzir os pares apenas pela cor dos fios.
+- Se o eixo fica firme quando o driver esta alimentado e se faz ruido ou
+  vibra durante o comando. Nao forcar o eixo nem mexer em fios energizados.
+
+Nao e possivel garantir movimento apenas mudando o codigo enquanto essas
+ligacoes e a alimentacao nao estiverem confirmadas.
 
 ## Pinos atuais
 
