@@ -44,7 +44,7 @@ DIRECAO_SUBIR_NIVEL = 1     # se a mesa DESCER ao tocar em "Subir", troque para 
 
 PASSOS_POR_VOLTA = 2000     # CONFIRMAR: driver ajustado para 2000 pulsos por volta
 FUSO_PASSO_MM = 8.0         # PREENCHER: quanto o fuso avança (mm) a cada volta do motor
-VELOCIDADE_PASSOS_S = 1600  # 0,8 volta/s com 2000 pulsos/volta; ainda precisa ser testada
+VELOCIDADE_PASSOS_S = 2000  # 1 volta/s nominal com 2000 pulsos/volta; validar no hardware
 
 
 # =====================================================================

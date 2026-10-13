@@ -14,7 +14,7 @@ de confirmar os valores abaixo. Execute apenas um programa por vez.
 | Ligacao do driver | Informar onde PUL+, PUL-, DIR+, DIR-, ENA+, ENA- estao ligados e se existe conversor de nivel |
 | ENA | USAR_ENA = False; confirmar se esta desconectado e se o driver fica habilitado assim |
 | Sentido | Motor ainda nao girou; DIRECAO_SUBIR_NIVEL = 1 ainda nao confirmado |
-| Velocidade | Teste separado: 200 pulsos/s; bancada: 1600 pulsos/s. Informar velocidade que funcionou sem perder passos |
+| Velocidade | Teste separado e bancada: 2000 pulsos/s nominais, conforme solicitado. Validar sem perda de passos no hardware |
 | Fuso | FUSO_PASSO_MM = 8.0; informar avanco por volta e eventual reducao entre motor e fuso |
 | Alturas | ALTURA_MINIMA_CM = 140 e ALTURA_MAXIMA_CM = 370, em cm, informados pela usuaria. Confirmar margem dos batentes |
 | Carga | Celula de 20 kg informada; CARGA_MAXIMA_KG = 10 conforme limite solicitado. Isso nao comprova capacidade mecanica da estrutura |
@@ -91,7 +91,7 @@ as duas no mesmo ambiente. Referencia: https://rpi-lgpio.readthedocs.io/
 ## Ordem dos testes
 
 1. Motor separado: `python testemotor.py`. Motor fixado, eixo livre, driver
-   alimentado e ajustado para 2000 pulsos/volta. `s` e `d` enviam 2000 pulsos
+   alimentado e ajustado para 2000 pulsos/volta. `s` e `d` enviam 20000 pulsos (10 voltas)
    cada, em aproximadamente 10 segundos; `q` sai e Ctrl+C interrompe.
    Esse teste nao monitora sensores nem emergencia por software.
 2. Emergencia: `python calibrar.py`, opcao 4. Conferir liberado/ACIONADO.
