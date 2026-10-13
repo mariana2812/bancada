@@ -54,7 +54,11 @@ class Motor:
         """Chamado ao encerrar o programa."""
         self._encerrar = True
         self._andando.set()  # acorda a thread para ela terminar
+        self._thread.join()
         self._andando.clear()
+        GPIO.output(config.PINO_PUL, GPIO.LOW)
+        if config.USAR_ENA:
+            GPIO.output(config.PINO_ENA, 1 - config.ENA_NIVEL_HABILITA)
         GPIO.cleanup()
 
     # ---------------------------------------------------------------
@@ -64,7 +68,7 @@ class Motor:
         meio_periodo = 1 / (2 * config.VELOCIDADE_PASSOS_S)
         while not self._encerrar:
             self._andando.wait()
-            while self._andando.is_set():
+            while self._andando.is_set() and not self._encerrar:
                 GPIO.output(config.PINO_PUL, GPIO.HIGH)
                 time.sleep(meio_periodo)
                 GPIO.output(config.PINO_PUL, GPIO.LOW)

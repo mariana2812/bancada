@@ -86,5 +86,19 @@ simulacao.definir_emergencia(False)
 time.sleep(0.3)
 conferir("reinicia depois de soltar o botão", cliente.post("/api/mesa/reiniciar").json["ok"] and mesa.estado == "parada")
 
+print("Falha da celula de carga")
+leitura_original = mesa._celula.ler_peso_kg
+timeout_original = config.TIMEOUT_CARGA_S
+try:
+    mesa._celula.ler_peso_kg = lambda: None
+    config.TIMEOUT_CARGA_S = 0.15
+    conferir("comeca movimento com leitura recente", cliente.post("/api/mesa/subir").json["ok"])
+    conferir("para quando HX711 deixa de responder", esperar(lambda: mesa.estado == "erro", tempo=2))
+    conferir("bloqueia movimento sem leitura recente", not cliente.post("/api/mesa/descer").json["ok"])
+finally:
+    mesa._celula.ler_peso_kg = leitura_original
+    config.TIMEOUT_CARGA_S = timeout_original
+conferir("recupera apos voltar a leitura", esperar(lambda: mesa.estado == "parada", tempo=2))
+
 mesa.encerrar()
 print("\nTudo certo.")

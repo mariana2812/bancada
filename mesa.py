@@ -41,6 +41,7 @@ class Mesa:
 
         self._historico_altura = []
         self._falhas_sensor = 0
+        self._ultima_leitura_carga = None
         self._inicio_movimento = 0.0
         self._emergencia_travada = False  # fica ligada até alguém reiniciar
         self._botao_pressionado = False
@@ -142,6 +143,10 @@ class Mesa:
             return "Emergência ativa. Destrave o botão e reinicie."
         if self.altura_cm is None:
             return "Sensor de altura sem leitura."
+        if self._falhas_sensor >= config.FALHAS_SENSOR_MAX:
+            return "Sensor de altura sem leitura recente."
+        if self._carga_sem_leitura():
+            return "Celula de carga sem leitura recente. Confira o HX711."
         if direcao == "subir":
             if self.carga_kg > config.CARGA_MAXIMA_KG:
                 return "Carga acima do limite. Retire peso da mesa."
@@ -160,6 +165,10 @@ class Mesa:
             self.estado = novo_estado
         if mensagem is not None:
             self.mensagem = mensagem
+
+    def _carga_sem_leitura(self):
+        return (self._ultima_leitura_carga is None or
+                time.monotonic() - self._ultima_leitura_carga > config.TIMEOUT_CARGA_S)
 
     # =================================================================
     # MONITORAMENTO (roda sozinho em segundo plano)
@@ -198,6 +207,7 @@ class Mesa:
 
             if peso is not None:
                 self.carga_kg = peso
+                self._ultima_leitura_carga = time.monotonic()
 
     def _verificar_seguranca(self):
         with self._trava:
@@ -206,6 +216,10 @@ class Mesa:
                 self._emergencia_travada = True
             if self._emergencia_travada:
                 self._parar_motor(EMERGENCIA, "EMERGÊNCIA! Mesa travada.")
+                return
+
+            if self._carga_sem_leitura():
+                self._parar_motor(ERRO, "Celula de carga sem leitura recente. Confira o HX711.")
                 return
 
             # 2) CARGA: acima do limite a mesa não sobe

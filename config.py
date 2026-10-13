@@ -42,7 +42,7 @@ ENA_NIVEL_HABILITA = 0      # nível do pino que HABILITA o motor (confira no ma
 
 DIRECAO_SUBIR_NIVEL = 1     # se a mesa DESCER ao tocar em "Subir", troque para 0
 
-PASSOS_POR_VOLTA = 1600     # PREENCHER: tem que ser igual ao configurado nas chaves SW5-SW8 do driver
+PASSOS_POR_VOLTA = 2000     # CONFIRMAR: driver ajustado para 2000 pulsos por volta
 FUSO_PASSO_MM = 8.0         # PREENCHER: quanto o fuso avança (mm) a cada volta do motor
 VELOCIDADE_PASSOS_S = 1600  # velocidade do motor em passos por segundo (1600 = 1 volta/s)
 
@@ -83,6 +83,7 @@ PERIODO_MONITOR_S = 0.03    # de quanto em quanto tempo a segurança confere tud
 TOLERANCIA_ALTURA_CM = 0.3  # erro aceito ao ir para uma altura salva
 TIMEOUT_MOVIMENTO_S = 120   # se andar por mais tempo que isso, para sozinho
 FALHAS_SENSOR_MAX = 10      # leituras ruins seguidas até parar a mesa
+TIMEOUT_CARGA_S = 3.0       # sem novas leituras do HX711: bloqueia e para o movimento
 TEMPO_INATIVIDADE_MIN = 10  # minutos sem tocar na tela até sair do login (0 = nunca)
 
 

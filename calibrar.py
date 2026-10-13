@@ -13,6 +13,7 @@ No final de cada passo o programa mostra a linha para colar no config.py.
 """
 
 import statistics
+import math
 import time
 
 import config
@@ -22,7 +23,10 @@ from hardware import _deve_simular
 def pedir_numero(texto):
     while True:
         try:
-            return float(input(texto).replace(",", "."))
+            valor = float(input(texto).replace(",", "."))
+            if not math.isfinite(valor) or valor <= 0:
+                raise ValueError
+            return valor
         except ValueError:
             print("  Digite um número, por exemplo 85,5")
 
@@ -73,22 +77,29 @@ def calibrar_carga(celula):
         return
 
     fator = (com_peso - zero) / peso
+    if fator == 0:
+        print("A leitura nao mudou com o peso. Confira a montagem e repita.")
+        return
     print(f"\nLeitura sem peso: {zero:.0f}   com peso: {com_peso:.0f}")
     print("\nCole no config.py:")
     print(f"HX711_FATOR = {fator:.2f}")
+    print(f"HX711_OFFSET = {zero:.0f}  # usado se TARA_AO_INICIAR = False")
 
 
 # ---------------------------------------------------------------------
 def testar_motor(motor):
     print("\n== MOTOR ==")
     print("ATENÇÃO: a mesa vai SUBIR por 2 segundos. Deixe o caminho livre e")
-    print("fique com a mão perto do botão de emergência.")
+    print("Este teste nao monitora sensores nem o botao por software.")
+    print("Mantenha o corte fisico de alimentacao ao alcance.")
     if input("Digite 's' para continuar: ").strip().lower() != "s":
         return
 
     motor.iniciar("subir")
-    time.sleep(2)
-    motor.parar()
+    try:
+        time.sleep(2)
+    finally:
+        motor.parar()
 
     resposta = input("A mesa subiu? (s = subiu / n = desceu / x = não mexeu): ").strip().lower()
     if resposta == "n":
@@ -130,24 +141,39 @@ def main():
     from hardware.celula_carga import CelulaCarga
     from hardware.emergencia import Emergencia
 
-    motor, sensor, celula, botao = Motor(), SensorAltura(), CelulaCarga(), Emergencia()
+    import RPi.GPIO as GPIO
+
+    motor = sensor = celula = botao = None
 
     try:
         while True:
             print("\n1) Altura   2) Carga   3) Motor   4) Emergência   0) Sair")
             opcao = input("Escolha: ").strip()
             if opcao == "1":
+                if sensor is None:
+                    sensor = SensorAltura()
                 calibrar_altura(sensor)
             elif opcao == "2":
+                if celula is None:
+                    celula = CelulaCarga()
                 calibrar_carga(celula)
             elif opcao == "3":
+                if motor is None:
+                    motor = Motor()
                 testar_motor(motor)
             elif opcao == "4":
+                if botao is None:
+                    botao = Emergencia()
                 testar_emergencia(botao)
             elif opcao == "0":
                 break
+    except (KeyboardInterrupt, EOFError):
+        print("\nCalibracao encerrada.")
     finally:
-        motor.limpar()
+        if motor is not None:
+            motor.limpar()
+        else:
+            GPIO.cleanup()
 
 
 if __name__ == "__main__":
